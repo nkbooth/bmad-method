@@ -18,7 +18,9 @@ activation_steps_prepend = []
 # Overrides append. Use for context-heavy setup that should happen
 # once the user has been acknowledged.
 
-activation_steps_append = []
+activation_steps_append = [
+  "Run `task project:{project_name} +story list` via Bash and display the full results, labeled as 'Taskwarrior Sprint View (source of truth)'. Also run `timew summary :week` via Bash and display this week's time log. Present these before reading sprint-status.yaml.",
+]
 
 # Persistent facts the workflow keeps in mind for the whole run
 # (standards, compliance constraints, stylistic guardrails).
@@ -32,6 +34,7 @@ activation_steps_append = []
 
 persistent_facts = [
   "file:{project-root}/**/project-context.md",
+  "Taskwarrior is the source of truth for story status. sprint-status.yaml is a sync artifact. When displaying sprint status, lead with the Taskwarrior view and note any discrepancies between Taskwarrior and sprint-status.yaml.",
 ]
 
 # Scalar: executed when the workflow reaches its final step,

@@ -38,4 +38,10 @@ persistent_facts = [
 # after sprint-status.yaml is generated and validated. Override wins.
 # Leave empty for no custom post-completion behavior.
 
-on_complete = ""
+on_complete = """After sprint-status.yaml is generated and validated, sync all work items to Taskwarrior to establish it as the source of truth for sprint tracking:
+
+1. For each epic entry in the generated YAML (keys matching 'epic-N' but NOT 'epic-N-retrospective'), check whether a Taskwarrior task already exists by running `task project:{project_name} +epic description.contains:<epic-key> count` via Bash. If count is 0, create it: `task add project:{project_name} +epic '<epic-key>'` via Bash.
+
+2. For each story entry (keys matching the digit-digit-name pattern such as '1-1-user-auth'), check `task project:{project_name} +story description.contains:<story-key> count` via Bash. If count is 0, create it: `task add project:{project_name} +story +bmad_backlog '<story-key>'` via Bash.
+
+3. Run `task project:{project_name} list` via Bash and display the results as confirmation that Taskwarrior is now the sprint roster."""

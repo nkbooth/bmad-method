@@ -38,4 +38,10 @@ persistent_facts = [
 # after the retrospective document is saved and sprint-status is updated. Override wins.
 # Leave empty for no custom post-completion behavior.
 
-on_complete = ""
+on_complete = """After the retrospective document is saved and sprint-status.yaml marks 'epic-{{epic_number}}-retrospective' as done, close out the epic in Taskwarrior:
+
+1. Mark any lingering review-tagged story tasks for this epic as done: run `task project:{project_name} +story +bmad_review description.contains:{{epic_number}}- done` via Bash.
+
+2. Mark the epic task done: run `task project:{project_name} +epic description.contains:epic-{{epic_number}} done` via Bash.
+
+3. Run `task project:{project_name} list` via Bash and display the final Taskwarrior state to confirm the completed epic is reflected."""

@@ -38,4 +38,10 @@ persistent_facts = [
 # after the story file is saved and sprint-status.yaml is updated. Override wins.
 # Leave empty for no custom post-completion behavior.
 
-on_complete = ""
+on_complete = """After the story file is saved and sprint-status.yaml is updated to 'ready-for-dev', sync the status change to Taskwarrior:
+
+1. Run `task project:{project_name} +story description.contains:{{story_key}} count` via Bash. If count > 0, run `task project:{project_name} +story description.contains:{{story_key}} modify -bmad_backlog +bmad_ready` via Bash. If count is 0, create the task: `task add project:{project_name} +story +bmad_ready '{{story_key}}'` via Bash.
+
+2. If this is the first story in the epic, verify the epic task exists: run `task project:{project_name} +epic description.contains:epic-{{epic_num}} count` via Bash. If count is 0, create it: `task add project:{project_name} +epic 'epic-{{epic_num}}'` via Bash.
+
+3. Run `task project:{project_name} +story list` via Bash and display results to confirm Taskwarrior reflects the new ready-for-dev state."""
