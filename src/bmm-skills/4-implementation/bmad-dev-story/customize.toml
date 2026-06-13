@@ -12,13 +12,17 @@
 # Steps to run before the standard activation (config load, greet).
 # Overrides append. Use for pre-flight loads, compliance checks, etc.
 
-activation_steps_prepend = []
+activation_steps_prepend = [
+  "Run `timew summary :day` via Bash to show today's Timewarrior time log as orientation before beginning story work. Display the output.",
+]
 
 # Steps to run after greet but before the workflow begins.
 # Overrides append. Use for context-heavy setup that should happen
 # once the user has been acknowledged.
 
-activation_steps_append = []
+activation_steps_append = [
+  "Run `task project:{project_name} status:pending` via Bash and display the open Taskwarrior tasks for this project as context.",
+]
 
 # Persistent facts the workflow keeps in mind for the whole run
 # (standards, compliance constraints, stylistic guardrails).
@@ -32,10 +36,11 @@ activation_steps_append = []
 
 persistent_facts = [
   "file:{project-root}/**/project-context.md",
+  "Time tracking: use Timewarrior (timew) for time accounting, not flat files. When workflow step 4 marks a story in-progress, run `timew start bmad {project_name}` via Bash to begin tracking.",
 ]
 
 # Scalar: executed when the workflow reaches its final step,
 # after the story implementation is complete and status is updated. Override wins.
 # Leave empty for no custom post-completion behavior.
 
-on_complete = ""
+on_complete = "Run `timew stop` via Bash to end the Timewarrior time entry, then display `timew summary :day` to show today's totals."
