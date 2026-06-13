@@ -38,6 +38,7 @@ persistent_facts = [
   "All implementation runs inside devcontainer via devpod. NEVER run builds, tests, or package installs on the host machine.",
   "Git commits focus on WHY not WHAT. NEVER add Co-Authored-By AI trailers. Do not bypass pre-commit hooks.",
   "Language stack is constrained: Rust (compiled/binary), Python (scripts/APIs), Bash (glue/CI), C#/.NET (enterprise), TypeScript+React (frontend SPA). Never suggest Go, Java, or PHP.",
+  "Secrets: use 'op run --env-file .env.template -- <command>' for any command needing env secrets. Never write or commit a .env file. Add new secrets to .env.template with op://project-name/ITEM_NAME/credential URIs before using them in code.",
 ]
 
 # Scalar: executed when the workflow reaches its final step,

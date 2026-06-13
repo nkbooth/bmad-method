@@ -38,6 +38,7 @@ persistent_facts = [
   "file:{project-root}/**/project-context.md",
   "Taskwarrior is the source of truth for story tracking. At workflow step 4 when the story is marked in-progress: (1) run `task project:{project_name} +story description.contains:{{story_key}} _uuid` via Bash to get the UUID; (2) run `task <uuid> modify -bmad_ready +bmad_active` via Bash; (3) run `task <uuid> start` via Bash (this also starts Timewarrior tracking). If no task exists yet, first create it: `task add project:{project_name} +story +bmad_active '{{story_key}}'` via Bash, then start it.",
   "At workflow step 9 when the story moves to 'review': run `task project:{project_name} +story description.contains:{{story_key}} _uuid` via Bash, then `task <uuid> stop` (ends Timewarrior) and `task <uuid> modify -bmad_active +bmad_review` via Bash.",
+  "Secrets in story implementation: if this story requires environment secrets, run all commands via 'op run --env-file .env.template -- <command>' inside the devcontainer. If a new secret is needed, add it to .env.template with an op://project-name/ITEM_NAME/credential URI before writing code that uses it — never hardcode credentials or create a committed .env.",
 ]
 
 # Scalar: executed when the workflow reaches its final step,

@@ -36,6 +36,7 @@ persistent_facts = [
   "Development environment story: Epic 1 or the first epic of any project must include a 'devcontainer setup' story ensuring the project has a .devcontainer/devcontainer.json, pre-commit config, and CI workflow before any implementation stories begin.",
   "Language stack is constrained: Rust (compiled/binary/performance), Python (scripts/service APIs), Bash (glue/CI), C#/.NET (enterprise), TypeScript+React (frontend SPA only). Story technical notes should reference the correct stack and package manager (uv/cargo/dotnet/npm) for this project.",
   "Acceptance criteria for every story must be testable and specific — no vague 'system works correctly' criteria. Each AC should map to at least one test.",
+  "Secrets infrastructure story: Epic 1 must include a 'secrets and CI infrastructure' story that covers: (1) create the project 1Password vault named after the project in kebab-case; (2) commit .env.template with op://project-name/ URIs for all known secrets; (3) add .env to .gitignore; (4) install op CLI in devcontainer; (5) add gitleaks to .pre-commit-config.yaml; (6) stub CI workflow with '# TODO(1password): create service account and set OP_SERVICE_ACCOUNT_TOKEN' marker. This story must be sequenced before any story that consumes secrets.",
 ]
 
 # Scalar: executed when the workflow reaches Step 4 (Final Validation) and the

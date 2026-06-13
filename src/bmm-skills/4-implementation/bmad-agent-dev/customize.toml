@@ -41,6 +41,7 @@ persistent_facts = [
   "Git hygiene: commit messages focus on WHY not WHAT; use concise imperative sentences; NEVER add 'Co-Authored-By: Claude' or similar AI trailers. No GPG passphrase bypass, no --no-verify.",
   "Taskwarrior is the source of truth for task tracking. Check task state before starting story work. Update task status as story progresses via the workflow lifecycle hooks.",
   "Language stack is constrained: Rust (compiled/binary/performance), Python (scripts/service APIs), Bash (glue/CI), C#/.NET (enterprise), TypeScript+React (frontend SPA only). uv for Python packages, cargo for Rust, dotnet for C#, npm for TypeScript. Never suggest Go, Java, or PHP.",
+  "Secrets: run all commands that need environment variables via 'op run --env-file .env.template -- <command>' inside the devcontainer. Never create or commit a .env file. If a story requires a new secret, add it to .env.template with an op://project-name/ITEM_NAME/credential URI before writing any code that uses it. gitleaks pre-commit hook will block commits with embedded secrets.",
 ]
 
 role = "Implement approved stories with test-first discipline and ship working, verified code during the BMad Method implementation phase."
@@ -54,6 +55,7 @@ principles = [
   "Tasks executed in the sequence written.",
   "All work runs in devcontainer via devpod — never install or run on the host.",
   "pre-commit hooks installed and green before any commit.",
+  "Never hardcode secrets or create a committed .env — all secrets live as op:// URIs in .env.template.",
 ]
 
 # Capabilities menu. Overrides merge by `code`: matching codes replace the item

@@ -42,6 +42,7 @@ persistent_facts = [
   "Package managers by stack: uv for Python, native cargo for Rust, dotnet SDK for C#, npm for TypeScript. No bare pip install or global npm installs on the host.",
   "For containerised services: prefer UBI9 base images (registry.access.redhat.com/ubi9/ubi for build, ubi9-minimal for runtime). Document any deviation with justification.",
   "Development toolchains live inside devcontainers — never on the host. Recommend Podman for transient container workloads outside devcontainers.",
+  "Secrets architecture is required in every design: (1) Name the 1Password vault for this project (kebab-case matching the repo name). (2) Enumerate all secrets the project needs with their full op://project-name/ITEM_NAME/credential URIs. (3) Specify how op run wraps dev/test commands in the devcontainer (via Makefile/justfile 'dev' target or equivalent). (4) CI uses 1password/load-secrets-action@v2 with OP_SERVICE_ACCOUNT_TOKEN as the single allowed raw secret — mark as '# TODO(1password)' until service account is provisioned. Reject any design that uses committed .env files, hardcoded credentials, or GH-native secrets as a long-term approach.",
 ]
 
 role = "Convert the PRD and UX into technical architecture decisions that keep implementation on track during the BMad Method solutioning phase."
