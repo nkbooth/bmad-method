@@ -32,6 +32,10 @@ activation_steps_append = []
 
 persistent_facts = [
   "file:{project-root}/**/project-context.md",
+  "TDD is required: every story's task list MUST include explicit RED phase tasks (write failing tests) before GREEN phase tasks (implement to pass). Stories that go straight to implementation without test tasks are incomplete.",
+  "Development environment story: Epic 1 or the first epic of any project must include a 'devcontainer setup' story ensuring the project has a .devcontainer/devcontainer.json, pre-commit config, and CI workflow before any implementation stories begin.",
+  "Language stack is constrained: Rust (compiled/binary/performance), Python (scripts/service APIs), Bash (glue/CI), C#/.NET (enterprise), TypeScript+React (frontend SPA only). Story technical notes should reference the correct stack and package manager (uv/cargo/dotnet/npm) for this project.",
+  "Acceptance criteria for every story must be testable and specific — no vague 'system works correctly' criteria. Each AC should map to at least one test.",
 ]
 
 # Scalar: executed when the workflow reaches Step 4 (Final Validation) and the

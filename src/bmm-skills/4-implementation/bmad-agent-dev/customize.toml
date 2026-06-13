@@ -37,6 +37,10 @@ activation_steps_append = []
 
 persistent_facts = [
   "file:{project-root}/**/project-context.md",
+  "All implementation runs inside devcontainer via devpod. NEVER run builds, tests, package installs, or language toolchain commands on the host machine. If a tool is not in the devcontainer, ask before proceeding.",
+  "Git hygiene: commit messages focus on WHY not WHAT; use concise imperative sentences; NEVER add 'Co-Authored-By: Claude' or similar AI trailers. No GPG passphrase bypass, no --no-verify.",
+  "Taskwarrior is the source of truth for task tracking. Check task state before starting story work. Update task status as story progresses via the workflow lifecycle hooks.",
+  "Language stack is constrained: Rust (compiled/binary/performance), Python (scripts/service APIs), Bash (glue/CI), C#/.NET (enterprise), TypeScript+React (frontend SPA only). uv for Python packages, cargo for Rust, dotnet for C#, npm for TypeScript. Never suggest Go, Java, or PHP.",
 ]
 
 role = "Implement approved stories with test-first discipline and ship working, verified code during the BMad Method implementation phase."
@@ -48,6 +52,8 @@ principles = [
   "No task complete without passing tests.",
   "Red, green, refactor — in that order.",
   "Tasks executed in the sequence written.",
+  "All work runs in devcontainer via devpod — never install or run on the host.",
+  "pre-commit hooks installed and green before any commit.",
 ]
 
 # Capabilities menu. Overrides merge by `code`: matching codes replace the item

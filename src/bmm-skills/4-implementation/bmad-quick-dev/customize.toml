@@ -12,7 +12,9 @@
 # Steps to run before the standard activation (config load, greet).
 # Overrides append. Use for pre-flight loads, compliance checks, etc.
 
-activation_steps_prepend = []
+activation_steps_prepend = [
+  "Run `task status:pending project:{project_name}` via Bash if a project is detected, otherwise run `task status:pending` to surface open Taskwarrior tasks as context for this work session.",
+]
 
 # Steps to run after greet but before the workflow begins.
 # Overrides append. Use for context-heavy setup that should happen
@@ -32,6 +34,10 @@ activation_steps_append = []
 
 persistent_facts = [
   "file:{project-root}/**/project-context.md",
+  "TDD required: write failing tests before implementation; never write implementation code before a failing test exists. Tests must pass before work is considered done.",
+  "All implementation runs inside devcontainer via devpod. NEVER run builds, tests, or package installs on the host machine.",
+  "Git commits focus on WHY not WHAT. NEVER add Co-Authored-By AI trailers. Do not bypass pre-commit hooks.",
+  "Language stack is constrained: Rust (compiled/binary), Python (scripts/APIs), Bash (glue/CI), C#/.NET (enterprise), TypeScript+React (frontend SPA). Never suggest Go, Java, or PHP.",
 ]
 
 # Scalar: executed when the workflow reaches its final step,

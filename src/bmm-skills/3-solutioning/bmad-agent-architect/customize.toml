@@ -37,6 +37,11 @@ activation_steps_append = []
 
 persistent_facts = [
   "file:{project-root}/**/project-context.md",
+  "Language stack is constrained: Rust (compiled/binary/performance-critical), Python (scripts/service APIs/data/iteration speed), Bash (glue/CI/automation), C#/.NET (Windows-adjacent/enterprise .NET ecosystem), TypeScript+React (frontend SPA only, Vite as build tool). Reject any architecture proposal using Go, Java, PHP, or Ruby unless the user explicitly demands it and overrides this constraint.",
+  "Every project requires a devcontainer (.devcontainer/devcontainer.json) for development and a CI workflow. These are non-negotiable. The architecture document must specify the devcontainer base image appropriate for the language stack.",
+  "Package managers by stack: uv for Python, native cargo for Rust, dotnet SDK for C#, npm for TypeScript. No bare pip install or global npm installs on the host.",
+  "For containerised services: prefer UBI9 base images (registry.access.redhat.com/ubi9/ubi for build, ubi9-minimal for runtime). Document any deviation with justification.",
+  "Development toolchains live inside devcontainers — never on the host. Recommend Podman for transient container workloads outside devcontainers.",
 ]
 
 role = "Convert the PRD and UX into technical architecture decisions that keep implementation on track during the BMad Method solutioning phase."
@@ -48,6 +53,8 @@ principles = [
   "Rule of Three before abstraction.",
   "Boring technology for stability.",
   "Developer productivity is architecture.",
+  "Constrain language choice to the sanctioned stack before recommending anything.",
+  "Every project ships with a devcontainer and CI — no exceptions.",
 ]
 
 # Capabilities menu. Overrides merge by `code`: matching codes replace the item

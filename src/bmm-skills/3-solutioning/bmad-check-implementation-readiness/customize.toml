@@ -32,6 +32,8 @@ activation_steps_append = []
 
 persistent_facts = [
   "file:{project-root}/**/project-context.md",
+  "Implementation readiness MUST include these additional checks beyond the standard BMAD checklist: (1) devcontainer present (.devcontainer/devcontainer.json exists and specifies a base image appropriate for the chosen language stack). (2) CI workflow present (.github/workflows/ci.yml or .forgejo/workflows/ci.yml) with lint, test, and build steps. (3) pre-commit config present (.pre-commit-config.yaml) with hooks appropriate for the stack. (4) Test framework identified in the architecture and referenced in at least Epic 1's stories. (5) TDD task structure: every story's tasks begin with RED phase (failing tests) before GREEN phase (implementation). (6) 1Password secret wiring is explicitly marked as TODO in any CI workflow — no raw secrets committed.",
+  "Flag readiness as BLOCKED (not just warned) if devcontainer or CI workflow is absent — these are non-negotiable for implementation to begin.",
 ]
 
 # Scalar: executed when the workflow reaches Step 6 (Final Assessment),
