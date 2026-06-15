@@ -97,6 +97,233 @@ Current shelf: brainstorming, product brief, PRFAQ, PRD, UX, market & industry r
 - [Upgrading from Previous Versions](https://docs.bmad-method.org/how-to/upgrade-to-v6/)
 - [Test Architect Documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)
 
+## Personal Fork — Installation Runbook
+
+This fork adds Taskwarrior/Timewarrior integration, 1Password secrets patterns, and opinionated developer preferences to the upstream BMad Method. The changes live in `customize.toml` files inside `src/bmm-skills/`. To replicate the full environment on a new machine, apply all steps below.
+
+### 1. Install this fork
+
+Clone and install in place of the upstream npm package. When installing BMad into a project, reference the local clone instead of `npx bmad-method`:
+
+```bash
+git clone https://github.com/nickvdyck/bmad-method.git ~/code/bmad-method
+cd ~/code/bmad-method && npm install
+# Then in any project:
+node ~/code/bmad-method/tools/installer/bmad-cli.js install
+```
+
+### 2. `~/.claude/CLAUDE.md`
+
+Create `~/.claude/CLAUDE.md` with your global development preferences (TDD, devcontainer-only workflow, commit hygiene, language stack, Taskwarrior integration, communication style). See [CLAUDE.md](CLAUDE.md) in this repo for the full template — copy and adapt it.
+
+### 3. `~/.claude.json` — MCP server registrations
+
+Add the following top-level `mcpServers` block to `~/.claude.json` (create the file if it does not exist):
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "type": "http",
+      "url": "http://127.0.0.1:11236/mcp"
+    },
+    "crawl4ai": {
+      "type": "sse",
+      "url": "http://127.0.0.1:11235/mcp/sse"
+    },
+    "search_bookmarks": {
+      "command": "npx",
+      "args": ["@karakeep/mcp"],
+      "env": {
+        "KARAKEEP_API_ADDR": "https://<your-karakeep-host>",
+        "KARAKEEP_API_KEY": "<your-karakeep-api-key>"
+      }
+    },
+    "1password": {
+      "command": "/usr/lib/opt/1Password/onepassword-mcp"
+    }
+  }
+}
+```
+
+The `search_bookmarks` entry requires a running [Karakeep](https://karakeep.app) instance and an API key generated from its settings.
+
+### 4. `~/.claude/settings.json` — hooks, Taskwarrior MCP, plugins
+
+Merge these keys into `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"Before compacting: are there memories or skills from this session worth saving? Review the session and save any important learnings to the memory system before the context is compacted.\"}'",
+            "statusMessage": "Memory check reminder..."
+          }
+        ]
+      }
+    ]
+  },
+  "mcpServers": {
+    "taskwarrior": {
+      "command": "podman",
+      "args": [
+        "run", "--rm", "-i",
+        "-v", "$HOME/.task:$HOME/.task:z",
+        "-v", "$HOME/.taskrc:$HOME/.taskrc:ro,z",
+        "-e", "TASKRC=$HOME/.taskrc",
+        "localhost/mcp-taskwarrior"
+      ]
+    }
+  },
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true,
+    "fullstack-dev-skills@fullstack-dev-skills": true,
+    "skill-creator@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "fullstack-dev-skills": {
+      "source": { "source": "github", "repo": "jeffallan/claude-skills" }
+    }
+  },
+  "permissions": {
+    "allow": ["Bash(task *)"]
+  }
+}
+```
+
+Then install the three plugins from within Claude Code:
+
+```
+/plugins install clangd-lsp@claude-plugins-official
+/plugins install fullstack-dev-skills@fullstack-dev-skills
+/plugins install skill-creator@claude-plugins-official
+```
+
+### 5. `~/.claude/settings.local.json` — MCP tool permissions
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "mcp__searxng__searxng_web_search",
+      "mcp__searxng__web_url_read",
+      "mcp__crawl4ai__md",
+      "mcp__crawl4ai__screenshot",
+      "mcp__search_bookmarks__create-bookmark",
+      "Bash(podman run *)",
+      "Bash(podman build *)",
+      "Bash(gh run *)",
+      "Bash(npx bmad-method *)"
+    ]
+  }
+}
+```
+
+### 6. Build the MCP container images
+
+**Taskwarrior MCP** (`~/.config/mcp-taskwarrior/Containerfile`):
+
+```dockerfile
+FROM fedora:latest
+RUN dnf install -y nodejs npm task && dnf clean all
+RUN npm install -g mcp-server-taskwarrior
+ENTRYPOINT ["npx", "mcp-server-taskwarrior"]
+```
+
+```bash
+mkdir -p ~/.config/mcp-taskwarrior
+# write Containerfile above, then:
+podman build -t localhost/mcp-taskwarrior ~/.config/mcp-taskwarrior/
+```
+
+**SearXNG MCP** (`~/.claude/mcp/searxng/Containerfile`):
+
+```dockerfile
+FROM node:lts-alpine
+RUN apk update && apk upgrade --no-cache && \
+    npm install -g mcp-searxng@1.0.3 && \
+    npm cache clean --force
+USER node
+ENTRYPOINT ["mcp-searxng"]
+```
+
+```bash
+podman build -t localhost/mcp-searxng:local ~/.claude/mcp/searxng/
+```
+
+**crawl4ai MCP** (`~/.claude/mcp/crawl4ai/Containerfile`):
+
+```dockerfile
+FROM unclecode/crawl4ai:0.8.6
+EXPOSE 11235
+```
+
+```bash
+podman build -t localhost/crawl4ai-mcp:local ~/.claude/mcp/crawl4ai/
+```
+
+### 7. Enable persistent MCP services (systemd user units)
+
+Create `~/.config/systemd/user/searxng-mcp.service`:
+
+```ini
+[Unit]
+Description=SearXNG MCP server
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/podman run --rm --sdnotify=conmon --replace -d \
+  --name searxng-mcp \
+  -p 127.0.0.1:11236:11236 \
+  -e SEARXNG_URL=https://<your-searxng-host> \
+  -e MCP_HTTP_PORT=11236 \
+  localhost/mcp-searxng:local
+ExecStop=/usr/bin/podman stop -t 10 searxng-mcp
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=default.target
+```
+
+Create `~/.config/systemd/user/crawl4ai-mcp.service`:
+
+```ini
+[Unit]
+Description=crawl4ai MCP server
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/podman run --rm --sdnotify=conmon --replace -d \
+  --name crawl4ai-mcp \
+  -p 127.0.0.1:11235:11235 \
+  localhost/crawl4ai-mcp:local
+ExecStop=/usr/bin/podman stop -t 10 crawl4ai-mcp
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=default.target
+```
+
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now searxng-mcp crawl4ai-mcp
+```
+
+The Taskwarrior MCP container is launched on-demand by Claude Code (step 4) and needs no persistent service.
+
+---
+
 ## Community
 
 - [Discord](https://discord.gg/gk8jAdXWmj) — Get help, share ideas, collaborate
