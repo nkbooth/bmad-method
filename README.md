@@ -5,7 +5,7 @@
 > - **Taskwarrior as the source of truth** across the BMAD lifecycle — stories, sprint status and dev-story progress are mirrored into `task`, with Timewarrior tracking time per story.
 > - **User preference overlays** injected into every routing and agent skill, so coding standards (TDD, docstrings, error propagation, language choice) apply without restating them per session.
 > - **1Password CLI (`op`) as the secrets standard** across all skills — no plaintext `.env` files.
-> - An [installation runbook](docs/) for replicating the setup on a new machine.
+> - An [installation runbook](#personal-fork--installation-runbook) for replicating the setup on a new machine.
 
 ---
 
